@@ -1,0 +1,25 @@
+
+.container {
+    display:flex;
+    // width:900px;
+    // justify-content: space-between;
+    // margin:30px auto;
+    
+    .sign-in-container {
+        width:50%;
+        margin:2rem;
+        box-sizing: border-box;
+    }
+    .sign-up-container {
+       width:50%;
+       margin:2rem;
+       
+       box-sizing: border-box;
+    }
+    .button-container {
+        display: flex;
+       .submit-btn {
+        margin:1.1rem;
+       }
+    }
+}

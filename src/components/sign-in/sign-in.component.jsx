@@ -1,11 +1,15 @@
 import {useState } from "react";
 import "./sign-in.component.scss";
-import { auth, signInWithGooglePopUp, createUserDocumentFromAuth,
-     signInWithEmail } from "../../utils/firebase/firebase.util";
+import { createUserDocumentFromAuth,
+     signInWithEmail,getCurrentUser } from "../../utils/firebase/firebase.util";
 import SignUpForm from "../sign-up/sign-up.component";
 import "../sign-up/form-input.styles.scss";
+import  { googleSignInStart, emailSignInStart } from '../../store/user/user.action';
+import { useDispatch } from 'react-redux';
 
 const SignIn = () => {
+    const dispatch = useDispatch();
+   
 
     // useEffect( () => {     
     //     const res = getRedirectResult(auth);
@@ -23,13 +27,8 @@ const SignIn = () => {
 
     // }, []);
 
-    const logGoogleUser = async () => {
-        const { user } = await signInWithGooglePopUp(); // extracting only the user object from the api call 
-
-        const userDocRef = await createUserDocumentFromAuth(user);
-        console.log(user);
-
-
+    const signInWithGoogle = () => {
+        dispatch(googleSignInStart());
     }
 
   
@@ -72,14 +71,7 @@ const SignIn = () => {
         }
         try {
             // console.log("user entred", email, password);
-           const res =  await signInWithEmail(email, password);
-           // we need to extract the user object and set it to userContext
-           const { user } = res;
-
-           // setting up the user state so since there is change in the state it will re-render the functional component
-            // setCurrentUser(user); // run useContext whenever there is change in the value of the user object
-
-           console.log("Check if successfully logged in?", res);
+            dispatch(emailSignInStart(email, password)); 
            resetForm();
         } catch(error) {
             console.log(error);
@@ -108,7 +100,7 @@ const SignIn = () => {
                 <button className="sign-in-btn submit-btn"
                 > Sign In</button>
                   <button className="submit-btn google-sign-in"
-                    onClick={logGoogleUser}
+                    onClick={signInWithGoogle}
                 > Google Sign In  </button>
                 </div>
                 </form>

@@ -44,7 +44,9 @@ const firebaseConfig = {
 
 
   // sign-in-with email and password
-  export const signInWithEmail = async(email, password) => await signInWithEmailAndPassword(auth, email, password);
+  export const signInWithEmail = 
+  async(email, password) => 
+  await signInWithEmailAndPassword(auth, email, password);
 
 //   export const signInWithGoogleRedirect = () => signInWithRedirect(auth, provider);
 
@@ -116,7 +118,7 @@ const firebaseConfig = {
         }
     }
     
-    return userDocRef;
+    return userSnapshot;
 
 }
 
@@ -134,6 +136,13 @@ export const SignOutUser = async() => {
 export const onAuthStateChangedListener = async (callback) => await onAuthStateChanged(auth, callback);
 
 
-
+export const getCurrentUser = () => {
+  return new Promise((resolve, reject) => {
+    const unsubscribe = onAuthStateChanged(auth, (userAuth) => {
+      unsubscribe();
+      resolve(userAuth);
+    }, reject);
+  }); 
+}
 
 

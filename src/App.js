@@ -1,17 +1,15 @@
 import { Routes, Route, Outlet } from 'react-router-dom';
 import { useEffect } from "react"
-import { createUserDocumentFromAuth, onAuthStateChangedListener } from './utils/firebase/firebase.util';
 import { useDispatch } from 'react-redux';
 import setCurrentUser from './store/user/user.action';
-import setCategoriesMap from './store/categories/categories.action';
-
-import {getCategoriesAndDocuments} from './utils/firebase/firebase.util';
 import Home from './routes/home/home.component';
 import Navigation from './routes/navigation/navigation.component';
 import SignIn from './components/sign-in/sign-in.component';
 import SignUpForm from './components/sign-up/sign-up.component';
 import Shop from './routes/shop/shop.component';
 import CheckOutPage from './components/check-out/check-out.component';
+import { fetchCategoriesStart } from './store/categories/categories.action';
+import { checkUserSession } from './store/user/user.action';
 
 // wild card character in React will be using * for 404 pages
 const ErrorPage = () => {
@@ -30,32 +28,14 @@ const App = () => {
 
   const dispatch = useDispatch()
   useEffect(()=>{
-    
-    const unsubscribe =  onAuthStateChangedListener(
-    (user) => {
-        if(user) {
-            createUserDocumentFromAuth(user);
-        }
-        dispatch(setCurrentUser(user));
-         // console.log(user);
-        return unsubscribe;
-        });  
-
+    dispatch(checkUserSession());
 },[]);
-
 
 
   // the api call to get the data from the firestore and we have set the data to the entire state
     useEffect(()=>{
-      const getCategoriesMap = async() => {
-          const categoryMap = await getCategoriesAndDocuments();
-          // console.log('cccc', categoryMap);
-          // this is the action method in the categories.action.js
-          // console.log('i am in app.js',categoryMap);
-          dispatch(setCategoriesMap(categoryMap));
-         
-      }
-      getCategoriesMap();
+      // we are keeping the api call abstract in the aciton.js of the reducer
+        dispatch(fetchCategoriesStart());
     },[]);
 
 

@@ -6,10 +6,12 @@ const DirectoryItem = ({ category }) => {
     const navigate = useNavigate();
 
     const onNavigateHandler = () => navigate(route);
-
+   
     // don't forget the return statement else the render won't be done
     return (
+       
         <DirectoryItemContainer onClick={onNavigateHandler}>
+           
             <BackgroundImage imageUrl={imageUrl}
                
             ></BackgroundImage>

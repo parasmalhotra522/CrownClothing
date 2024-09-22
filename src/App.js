@@ -10,6 +10,7 @@ import Authentication from './routes/authentication/authentication.component';
 import Checkout from './routes/checkout/checkout.component';
 import { ClipLoader } from 'react-spinners';
 import ProtectedRoute from './components/ProtectedRoute';
+import PaymentSuccess from './components/PaymentSuccess';
 const App = () => {
   const dispatch = useDispatch();
   const darkModeState = useSelector(state => state.darkModeReducer);
@@ -64,11 +65,11 @@ const App = () => {
           <Route path='shop/*' element={<Shop />} />
           <Route path='auth' element={<Authentication />} />
           <Route path='checkout' element={
-
             <ProtectedRoute>
               <Checkout />
             </ProtectedRoute>
           } />
+          <Route path='/success' element={<PaymentSuccess/>}/>
         </Route>
       </Routes>
       </div>

@@ -81,12 +81,13 @@ export const createUserDocumentFromAuth = async (
   const userSnapshot = await getDoc(userDocRef);
 
   if (!userSnapshot.exists()) {
-    const { displayName, email } = userAuth;
+    const { email } = userAuth;
+    // console.log("----CHECK API CALL>>> WITH DAATA", additionalInformation);
     const createdAt = new Date();
 
     try {
       await setDoc(userDocRef, {
-        displayName,
+        displayName:additionalInformation.displayName,
         email,
         createdAt,
         ...additionalInformation,
@@ -110,6 +111,16 @@ export const signInAuthUserWithEmailAndPassword = async (email, password) => {
 
   return await signInWithEmailAndPassword(auth, email, password);
 };
+
+export const signInAuthUserDetails = async(user) => {
+    const userDocRef = doc(db, 'users', user.uid);
+    const userSnapshot = await getDoc(userDocRef);
+    if (userSnapshot.exists()) {
+      const userData = userSnapshot.data();
+    return userData;
+    }
+}
+
 
 export const signOutUser = async () => await signOut(auth);
 

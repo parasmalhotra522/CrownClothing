@@ -6,10 +6,14 @@ import Button, { BUTTON_TYPE_CLASSES } from '../button/button.component';
 import {
   signInAuthUserWithEmailAndPassword,
   signInWithGooglePopup,
+  signInAuthUserDetails
 } from '../../utils/firebase/firebase.utils';
 
 import { SignInContainer, ButtonsContainer } from './sign-in-form.styles';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
+import { startLoading, stopLoading } from '../../store/Loader/loader';
 
 const defaultFormFields = {
   email: '',
@@ -21,38 +25,88 @@ const defaultFormFields = {
 const SignInForm = () => {
   const [formFields, setFormFields] = useState(defaultFormFields);
   const { email, password } = formFields;
-  
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const resetFormFields = () => {
     setFormFields(defaultFormFields);
   };
 
   const signInWithGoogle = async () => {
-    await signInWithGooglePopup();
+    dispatch(startLoading());
+    try {
+      const {user} = await signInWithGooglePopup();
+      console.log("-00Checkin sign in with Google Ppop UP", user);
+      
+       await localStorage.setItem('authData', JSON.stringify({
+        idToken: user.accessToken,
+        refreshToken: user.stsTokenManager.refreshToken,
+        email: user.email,
+        expiresIn: user.stsTokenManager.expirationTime,
+         isExpired: user.stsTokenManager.isExpired,
+        displayName:user.displayName
+      }))
+      
+      
+      dispatch(stopLoading());
+      notify('success', `Welcome ${user.displayName}`);
+      navigate('/shop')
+     
+    } catch (error) {
+      dispatch(stopLoading());
+      notify('error', 'errr');
+      resetFormFields();
+    }
   };
 
+  const notify = (type, message) => {
+    switch (type) {
+      case 'warn':
+        toast.warn(message)
+        break;
+      case 'success':
+        toast.success(message);
+        break;
+      case 'error':
+        toast.error(message);
+        break;
+      default:
+        break;
+    }
+  }
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    dispatch(startLoading());
     try {
-      const data = await signInAuthUserWithEmailAndPassword(email, password);
+      const {user} = await signInAuthUserWithEmailAndPassword(email, password);
       // set the token and everything in the local storage
+      
+      const {displayName} = await signInAuthUserDetails(user);
+    
+    
       await localStorage.setItem('authData', JSON.stringify({
-          idToken: data._tokenResponse.idToken,
-          refreshToken: data._tokenResponse.refreshToken,
-          email: data._tokenResponse.email,
-          localId: data._tokenResponse.localId,
-          expiresIn: data._tokenResponse.expiresIn,
+        idToken: user.accessToken,
+        refreshToken: user.stsTokenManager.refreshToken,
+        email: user.email,
+        expiresIn: user.stsTokenManager.expirationTime,
+        isExpired: user.stsTokenManager.isExpired,
+        displayName: displayName
       }))
+      
 
 
-      console.log("--- Checking response aftre getting data", data, data._tokenResponse);
-      console.log("----Checking local", localStorage.getItem('authData'))
+      console.log("--- Checking response aftre getting user", user);
+      console.log("----Checking local", localStorage.getItem('authuser'))
       resetFormFields();
+      dispatch(stopLoading());
+      notify('success', `Welcome ${displayName ?? user._tokenResponse.email}`);
       navigate('/shop')
-    } catch (error) {
-      console.log('user sign in failed', error);
+    } catch ({code, message}) {
+      // console.log('user sign in failed', code, message);
+      dispatch(stopLoading());
+      notify('error', code + message);
+      resetFormFields();
     }
   };
 

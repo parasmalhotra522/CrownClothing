@@ -1,80 +1,79 @@
-import { Routes, Route, Outlet } from 'react-router-dom';
-import { useEffect } from "react"
-import { useDispatch } from 'react-redux';
-import setCurrentUser from './store/user/user.action';
-import Home from './routes/home/home.component';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Routes, Route } from 'react-router-dom';
+import { onAuthStateChangedListener, createUserDocumentFromAuth } from './utils/firebase/firebase.utils';
+import { setCurrentUser } from './store/user/user.reducer';
 import Navigation from './routes/navigation/navigation.component';
-import SignIn from './components/sign-in/sign-in.component';
-import SignUpForm from './components/sign-up/sign-up.component';
+import Home from './routes/home/home.component';
 import Shop from './routes/shop/shop.component';
-import CheckOutPage from './components/check-out/check-out.component';
-import { fetchCategoriesStart } from './store/categories/categories.action';
-import { checkUserSession } from './store/user/user.action';
-
-// wild card character in React will be using * for 404 pages
-const ErrorPage = () => {
-  return (<h1> Page not found</h1>);
-}
-
-
-
+import Authentication from './routes/authentication/authentication.component';
+import Checkout from './routes/checkout/checkout.component';
+import { ClipLoader } from 'react-spinners';
+import ProtectedRoute from './components/ProtectedRoute';
 const App = () => {
+  const dispatch = useDispatch();
+  const darkModeState = useSelector(state => state.darkModeReducer);
+  const loading = useSelector(state => state.loaderReducer.loading);
 
-  // now we are going to make route to the Home component that will be the base page of the Website
-  // Routes will contain multiple singular routes and we have concept of path and element in React
-  // where path -> includes the url string path  
-  // element -> the component it should take your component to ..
-  // when the path matches
+  useEffect(() => {
+    const unsubscribe = onAuthStateChangedListener(user => {
+      if (user) {
+      createUserDocumentFromAuth(user);
+      }
+      dispatch(setCurrentUser(user ? { ...user, displayName: JSON.parse(localStorage.getItem('authData')).displayName } : null));
 
-  const dispatch = useDispatch()
-  useEffect(()=>{
-    dispatch(checkUserSession());
-},[]);
-
-
-  // the api call to get the data from the firestore and we have set the data to the entire state
-    useEffect(()=>{
-      // we are keeping the api call abstract in the aciton.js of the reducer
-        dispatch(fetchCategoriesStart());
-    },[]);
-
-
-
-
-  return (
-    <Routes>
-      {/* these below are the sibling routes 
-      <Route path='/' element={<Home />}></Route>
-      <Route path='/nav' element={<NavBar />}></Route> */}
-     
-     {/* We are making nested route here /home/nav to show the bottom nav 
-      but we see that the home component is still visisble despite going to /home/nav url
-      to get rid of this we have to Add <Outlet> to the Parent component which is Home in this case
-       to tell that wehere it should go
-      *** So NavBar should normally stay same a top in each route so we can make it as Parent component
-      and nest all the routes inside it ****
-
-     
-     
-       similar to router-outlet in angular
-     */}
-
-
-
-
-     <Route path='/' element={<Navigation />}>
-        <Route path='/' element={<Home />}></Route>
-        <Route path='/shop/*' element={<Shop />}></Route>
-        <Route path='/sign-up' element={<SignUpForm/>}></Route>
-
-        <Route path='/sign-in' element={<SignIn/>}></Route>
-        <Route path="/checkout" element={<CheckOutPage/>}></Route>
-     </Route>
-
-      <Route path='*' element={<ErrorPage />}></Route>
+    });
     
-    </Routes>
+    return unsubscribe;
+  }, [dispatch]);
+
+  const blurStyle = {
+    filter: loading ? 'blur(1.5px)' : 'none',
+    transition: 'filter 0.3s ease',
+  };
+  return (
+    <div style={{ 
+      backgroundColor: darkModeState.backgroundColor,
+      color: darkModeState.textColor,
+      minWidth: '100vw',
+      minHeight: '100vh',
+      position: 'relative' // Ensure positioning context for the loader
+    }}>
+      {loading && (
+        <div className="loader-container"
+        style={{
+           position:'fixed', /* Fixed positioning to center in the viewport */
+          top:'50%',
+          left:'50%',
+          transform: 'translate(-50%, -50%)', /* Center it vertically and horizontally */
+          zIndex:'1000', /* Ensure it's above other content */
+        }}
+        
+        >
+          <ClipLoader
+            size={150}
+            aria-label="Loading Spinner"
+            data-testid="loader"
+          />
+        </div>
+      )}
+      <div style={blurStyle}>
+      <Routes>
+        <Route path='/' element={<Navigation />}>
+          <Route index element={<Home />} />
+          <Route path='shop/*' element={<Shop />} />
+          <Route path='auth' element={<Authentication />} />
+          <Route path='checkout' element={
+
+            <ProtectedRoute>
+              <Checkout />
+            </ProtectedRoute>
+          } />
+        </Route>
+      </Routes>
+      </div>
+    </div>
   );
-}
+};
 
 export default App;

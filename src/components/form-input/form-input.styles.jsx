@@ -3,14 +3,15 @@ import styled, { css } from 'styled-components';
 const subColor = 'grey';
 const mainColor = 'black';
 
-const shrinkLabelStyles = css`
-  top: -14px;
-  font-size: 12px;
-  color: ${mainColor};
+const shrinkLabelStyles = () => css`
+  top: -26px;
+  font-size: 14px;
+  color: color;
+ 
 `;
 
 export const FormInputLabel = styled.label`
-  color: ${subColor};
+  color: ${(props) => props.color || subColor}
   font-size: 16px;
   font-weight: normal;
   position: absolute;
@@ -18,8 +19,12 @@ export const FormInputLabel = styled.label`
   left: 5px;
   top: 10px;
   transition: 300ms ease all;
-  ${({ shrink }) => shrink && shrinkLabelStyles};
-`;
+  padding-bottom:1.2rem;
+
+
+${({ shrink }) => shrink && shrinkLabelStyles};
+
+  `;
 
 export const Input = styled.input`
   background: none;

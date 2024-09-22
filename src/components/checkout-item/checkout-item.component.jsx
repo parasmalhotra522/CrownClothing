@@ -15,16 +15,44 @@ import {
   Value,
   RemoveButton,
 } from './checkout-item.styles';
+import { toast } from 'react-toastify';
+import { startLoading, stopLoading } from '../../store/Loader/loader';
 
 const CheckoutItem = ({ cartItem }) => {
   const { name, imageUrl, price, quantity } = cartItem;
   const dispatch = useDispatch();
 
-  const clearItemHandler = () =>
-    dispatch(clearItemFromCart(cartItem));
+  const notify = (type, msg) => {
+    switch (type) {
+      case 'success':
+        toast.success(msg);
+        break;
+      case 'error':
+           toast.error(msg);
+        break;
+      case 'warn':
+        toast.warn(msg);
+        break;
+      default:
+        break;
+    }
+  }
+
+  const clearItemHandler = async () => {
+    dispatch(startLoading())
+    try {
+      await dispatch(clearItemFromCart(cartItem));
+      notify('success', "Success: Item removed from Cart")
+    } catch (error) {
+      notify('error', "Error: Could not remove item from Cart")
+     } finally {
+      dispatch(stopLoading());
+    }
+  
+  }
+ 
   const addItemHandler = () => dispatch(addItemToCart(cartItem));
-  const removeItemHandler = () =>
-    dispatch(removeItemFromCart(cartItem));
+  const removeItemHandler = () => dispatch(removeItemFromCart(cartItem));
 
   return (
     <CheckoutItemContainer>

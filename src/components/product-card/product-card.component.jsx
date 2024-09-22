@@ -1,32 +1,62 @@
-import "./product-card.component.scss";
-import {addItemToCart} from '../../store/cart/cart.action';
-import { selectCartItems } from '../../store/cart/cart.selector';
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from 'react-redux';
+import { useState, useEffect } from 'react';
+import {  addItemToCart } from '../../store/cart/cart.reducer';
 
-const ProductCard = ({product}) => {
-    // console.log('I am in ',product);    
-    const dispatch = useDispatch();
-    const {name, imageUrl, price} = product;
-    const cartItems = useSelector(selectCartItems);
+import Button, { BUTTON_TYPE_CLASSES } from '../button/button.component';
+import { selectCurrentUser } from '../../store/user/user.selector';
+import {
+  ProductCartContainer,
+  Footer,
+  Name,
+  Price,
+} from './product-card.styles';
 
-    // const {addItemToCart} = useContext(CartContext);
-    // const check = selectCart(product);
-    // console.log("Checking the state", check);
-    // const addItemToCart = () => addCartItem([],product);
-    const addProductToCart = () => dispatch(addItemToCart(cartItems, product));
-    return (
-        <div className="product-card-container">
-            <img src={imageUrl} alt={name}/>
-            <div className="footer">
-                <span className="name">{name}</span>
-                <span className="price">{price}</span>
-            </div>
-            <button type="button" className="add-to-cart"
-                onClick = {addProductToCart}
-            >Add to cart</button>
-        </div>
-    );
-}
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
+const ProductCard = ({ product }) => {
+  const { name, price, imageUrl } = product;
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const dispatch = useDispatch();
+  const notify = () => toast.error("Please Login to Add Item to Cart !");
+  const addProductToCart = () => {
+    if (isLoggedIn) {
+      dispatch(addItemToCart(product))
+    }
+    else {
+      notify();
+    }
+  };
+  const currentUser = useSelector(selectCurrentUser);
+  
+  useEffect(() => {
+    // console.log("----- Checking current User", currentUser);
+    if (!currentUser) {
+      setIsLoggedIn(false);
+    } else {
+      setIsLoggedIn(true);
+    }
+  
+  }, [currentUser])
+  
+  return (
+    <ProductCartContainer>
+     
+      <img src={imageUrl} alt={`${name}`} />
+      <Footer>
+        <Name>{name}</Name>
+        <Price>${price}</Price>
+      </Footer>
+      <Button
+        // disabled = {!isLoggedIn}
+        buttonType={BUTTON_TYPE_CLASSES.inverted}
+        onClick={addProductToCart}
+      >
+        Add to cart
+      </Button>
+      
+    </ProductCartContainer>
+  );
+};
 
 export default ProductCard;

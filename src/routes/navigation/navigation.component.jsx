@@ -1,64 +1,102 @@
-import { Outlet } from "react-router-dom";
-import {NavigationContainer, LogoContainer, NavLinks, NavLink} from  "./navigation.styles.jsx";
-import { Fragment } from "react";
-import { useSelector } from "react-redux";
-// we can import svg in React as component
-import {ReactComponent as CrownLogo} from '../../assets/images/crown.svg';
-import { SignOutUser } from "../../utils/firebase/firebase.util";
-import CartIcon from "../../components/cart-icon/cart-icon.component";
-import CartDropDown from "../../components/cart-dropdown/cart-dropdown.component";
+import { Fragment } from 'react';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { selectCurrentUser } from "../../store/user/user.selector.js";
-import { selectIsCartOpen } from "../../store/cart/cart.selector.js";
+import CartIcon from '../../components/cart-icon/cart-icon.component';
+import CartDropdown from '../../components/cart-dropdown/cart-dropdown.component';
 
+import { selectCurrentUser } from '../../store/user/user.selector';
+import { selectIsCartOpen } from '../../store/cart/cart.selector';
 
-// we have concept of Fragment which are provided by React we can say they are just container which don't
-// pose extra tag onto DOM when we see them in console
+import { ReactComponent as CrwnLogo } from '../../assets/crown.svg';
+import { signOutUser } from '../../utils/firebase/firebase.utils';
+import { emptyCart } from '../../store/cart/cart.reducer';
+import { NavLink } from 'react-router-dom';
+import {
+  NavigationContainer,
+  NavLinks,
+  NavLinkStyle,
+  LogoContainer,
+} from './navigation.styles';
+
+import { ToastContainer } from 'react-toastify';
+import ToggleSwitch from './ToggleSwitch';
+import { startLoading, stopLoading } from '../../store/Loader/loader';
+import { toast } from 'react-toastify';
+import Avatar from './Avatar'; 
+import './style.css';
 
 const Navigation = () => {
-    // we use Fragment as the main div tag to be returned
+  const currentUser = useSelector(selectCurrentUser);
+  const isCartOpen = useSelector(selectIsCartOpen);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+ 
+  const onSignOut = async () => {
+    dispatch(startLoading()); 
 
-    const currentUser = useSelector(selectCurrentUser);
-  
-    const isCartOpen = useSelector(selectIsCartOpen);
+    try {
+      await signOutUser(); 
+      dispatch(emptyCart()); 
+      dispatch(stopLoading()); 
+      toast.success('Successfully signed out!');
+      navigate('/'); 
+    } catch (error) {
+      dispatch(stopLoading()); 
+      toast.error('Failed to sign out. Please try again.');
+      // console.error('Sign-out error:', error);
+    }
+  };
 
-    const SignOutUserHandler = async() => {
-      const res = await SignOutUser();
-      // setCurrentUser(null);
-      console.log(res);
-    } 
+  return (
+    <Fragment>
+      <ToastContainer
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss={false}
+        pauseOnHover={false}
+        theme='light'
+      />
+      <NavigationContainer>
+        <LogoContainer to='/'>
+          <CrwnLogo className='logo' />
+        </LogoContainer>
+        <NavLinks>
+          <ToggleSwitch />
+          <NavLink
+            style={{padding:'10px 15px'}}
+            to='/shop'
+            className={({ isActive }) => {
+              return isActive ? 'active-link' : 'inactive-link';
+            }}
+          >
+            SHOP
+            </NavLink>
+         
 
-   
-
-    // console.log("Check logged in user from nav-bar", currentUser);
-    return (
-      <Fragment>
-        
-        <NavigationContainer>
-        {/* Link is similar to a tag in html */}
-            <LogoContainer to='/'>
-               
-               <CrownLogo className="logo"/>
-              
-            </LogoContainer>
-
-            <NavLinks>
-                <NavLink to="/">Home</NavLink>
-                <NavLink to="/shop">Shop</NavLink>
-                { currentUser ? (<NavLink as='span'  onClick={SignOutUserHandler} >Sign Out</NavLink>)
-                : (<NavLink to="/sign-in">Sign In</NavLink>)
-                }
-
-                <NavLink className="nav-link">
-                  <CartIcon />
-                </NavLink>
-               {isCartOpen &&  <CartDropDown/>}
-                
-            </NavLinks>
-            </NavigationContainer>
-          <Outlet></Outlet>
+          {currentUser ? (
+            <>
+              <Avatar currentUser={currentUser} onSignOut={onSignOut} /> 
+            </>
+          ) : (
+            <NavLink
+                to='/auth'
+                 style={{padding:'10px 15px'}}
+                className={({ isActive }) => {
+                return isActive ? 'active-link' : 'inactive-link';
+              }}
+            >
+              SIGN IN
+            </NavLink>
+          )}
+          <CartIcon />
+        </NavLinks>
+        {isCartOpen && <CartDropdown />}
+      </NavigationContainer>
+      <Outlet />
     </Fragment>
-    )
-  }
+  );
+};
 
-  export default Navigation;
+export default Navigation;

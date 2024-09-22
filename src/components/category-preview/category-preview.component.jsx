@@ -1,33 +1,35 @@
-import "./category-preview.component.scss";
-import ProductCard from "../product-card/product-card.component";
-import { useNavigate, Link } from "react-router-dom";
-import { Fragment } from "react";
+import ProductCard from '../product-card/product-card.component';
 
-const CategoryPreview = ({ title, products }) => {
-    const navigate = useNavigate();
-
-    return (
-        <div className="category-preview-container">
+import {
+  CategoryPreviewContainer,
+  Title,
+  Preview,
+} from './category-preview.styles';
 
 
-            <h2>
-                <Link className="title" to={title}>{title.toUpperCase()}</Link>
-            </h2>
-            <div className="preview">
-                {
-                    products.filter((_, index) => index < 4)
-                        .map((product) =>
-                            <ProductCard key={product.id} product={product} ></ProductCard>
-                        )
-                }
-            </div>
+const CategoryPreview = ({ title, products, textColor }) => {
 
 
-
-
-        </div>
-    );
-
-}
+  return (
+    <CategoryPreviewContainer>
+      <h2>
+        <Title
+          color={textColor}
+          to={title}
+        >
+          {title.toUpperCase()}
+        </Title>
+      </h2>
+      <Preview>
+      
+        {products
+          .filter((_, idx) => idx < 4)
+          .map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+      </Preview>
+    </CategoryPreviewContainer>
+  );
+};
 
 export default CategoryPreview;

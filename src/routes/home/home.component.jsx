@@ -1,45 +1,15 @@
-import Categories from "../../components/categories/categories.component";
+import { Outlet } from 'react-router-dom';
+
+import Directory from '../../components/directory/directory.component';
 
 const Home = () => {
-    let categories = [
-        {
-          id: 1,
-          title:"Hats",
-          imageUrl: "https://i.ibb.co/cvpntL1/hats.png",
-          route: "shop/hats"
-        }, 
-        {
-          id: 2,
-          title: "Jackets",
-          imageUrl: "https://i.ibb.co/px2tCc3/jackets.png",
-          route: "shop/jackets"
-        },
-        {
-          id: 3,
-          title: "Sneakers",
-          imageUrl: "https://i.ibb.co/0jqHpnp/sneakers.png",
-          route: "shop/sneakers"
-        },
-        {
-          id: 4,
-          title: "Womens",
-          imageUrl: "https://i.ibb.co/GCCdy8t/womens.png",
-          route: "shop/womens"
-        },
-        {
-          id: 5,
-          title: "Mens",
-          imageUrl: "https://i.ibb.co/R70vBrQ/men.png",
-          route: "shop/mens"
-        }
-      ]
-      return (
-        <div className="App">
-          {/* passing props as categories to Categories component */}
-          <Categories categories={categories}></Categories>
-    
-        </div>
-      );
-}
+  return (
+    <div>
+      
+      <Directory />
+      <Outlet />
+    </div>
+  );
+};
 
 export default Home;

@@ -1,0 +1,10 @@
+.active-link {
+    font-weight: bold;
+    transform: scale(1.2); /* Slightly enlarge the active link */
+    color:#9b3232;
+    margin:.2rem
+}
+
+.inactive-link {
+    color: #333; /* Dark text for inactive links */
+}

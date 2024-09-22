@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import CartIcon from '../../components/cart-icon/cart-icon.component';
@@ -15,7 +15,6 @@ import { NavLink } from 'react-router-dom';
 import {
   NavigationContainer,
   NavLinks,
-  NavLinkStyle,
   LogoContainer,
 } from './navigation.styles';
 

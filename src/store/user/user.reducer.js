@@ -13,6 +13,6 @@ export const userSlice = createSlice({
   }
 }
 });
-console.log(userSlice);
+// console.log(userSlice);
 export const {setCurrentUser} = userSlice.actions;
 export const userReducer = userSlice.reducer;

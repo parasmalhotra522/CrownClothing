@@ -70,7 +70,7 @@ export const cartSlice = createSlice({
     }
   }
 });
-  console.log('check cart actions,', cartSlice.actions);
+  // console.log('check cart actions,', cartSlice.actions);
 export const { addItemToCart, removeItemFromCart, clearItemFromCart , setIsCartOpen, emptyCart} = cartSlice.actions;
 export const cartReducer = cartSlice.reducer;
 

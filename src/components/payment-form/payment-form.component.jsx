@@ -14,7 +14,7 @@ const PaymentForm = ({ amt }) => {
     const navigate = useNavigate();
     // const isCartOpen = useSelector(selectIsCartOpen)
     const onToken = async (token) => {
-        console.log('token', token);
+        // console.log('token', token);
         dispatch(setIsCartOpen(false))
         try {
             const resp = await axios.post('/.netlify/functions/create-payment-intent',
@@ -23,7 +23,7 @@ const PaymentForm = ({ amt }) => {
                 }
             );
 
-            console.log("Checking resopse", resp);
+            // console.log("Checking resopse", resp);
             const { paymentIntent } = resp.data;
             // Ensure paymentIntent exists
             if (!paymentIntent) {
@@ -35,7 +35,7 @@ await dispatch(startLoading());
                 token: token.id, // Pass the token ID
             });
 
-            console.log("Payment Confirmation Response:", confirmResp);
+            // console.log("Payment Confirmation Response:", confirmResp);
             toast.success('Payment Successful!');
             await dispatch(emptyCart());
             dispatch(setIsCartOpen(false))
@@ -43,7 +43,7 @@ await dispatch(startLoading());
             navigate('/success');
         }
         catch (error) {
-            console.log(error);
+            // console.log(error);
             toast.error(error.message);
             // console.log('Payment Error: ', JSON.parse(error));
             // alert(

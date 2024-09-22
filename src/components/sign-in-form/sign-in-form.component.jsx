@@ -36,7 +36,7 @@ const SignInForm = () => {
     dispatch(startLoading());
     try {
       const {user} = await signInWithGooglePopup();
-      console.log("-00Checkin sign in with Google Ppop UP", user);
+      // console.log("-00Checkin sign in with Google Ppop UP", user);
       
        await localStorage.setItem('authData', JSON.stringify({
         idToken: user.accessToken,
@@ -96,8 +96,8 @@ const SignInForm = () => {
       
 
 
-      console.log("--- Checking response aftre getting user", user);
-      console.log("----Checking local", localStorage.getItem('authuser'))
+      // console.log("--- Checking response aftre getting user", user);
+      // console.log("----Checking local", localStorage.getItem('authuser'))
       resetFormFields();
       dispatch(stopLoading());
       notify('success', `Welcome ${displayName ?? user._tokenResponse.email}`);

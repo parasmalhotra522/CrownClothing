@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 const Avatar = ({ currentUser, onSignOut }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  console.log("----Curent user", currentUser);
+  // console.log("----Curent user", currentUser);
   // Toggles the dropdown visibility
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -11,7 +11,7 @@ const Avatar = ({ currentUser, onSignOut }) => {
   // Get initials from the user's name or email
   const getInitials = (name) => {
     if (!name) return 'U'; // Default to 'U' if no name is available
-    console.log("---name ", name);
+    // console.log("---name ", name);
     const splitName = name.split(' ');
     return splitName.length > 1
       ? `${splitName[0][0]}${splitName[1][0]}`.toUpperCase()

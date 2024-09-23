@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import { startLoading, stopLoading } from '../../store/Loader/loader';
+import { setCurrentUser } from '../../store/user/user.reducer';
 
 const defaultFormFields = {
   email: '',
@@ -100,7 +101,8 @@ const SignInForm = () => {
       // console.log("----Checking local", localStorage.getItem('authuser'))
       resetFormFields();
       dispatch(stopLoading());
-      notify('success', `Welcome ${displayName ?? user._tokenResponse.email}`);
+      dispatch(setCurrentUser(user));
+      notify('success', `Welcome ${displayName ?? user.email}`);
       navigate('/shop')
     } catch ({code, message}) {
       // console.log('user sign in failed', code, message);

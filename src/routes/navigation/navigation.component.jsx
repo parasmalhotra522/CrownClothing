@@ -76,7 +76,9 @@ const Navigation = () => {
 
           {currentUser ? (
             <>
-              <Avatar currentUser={currentUser} onSignOut={onSignOut} /> 
+              <Avatar currentUser={currentUser}
+                onSignOut={onSignOut}
+              /> 
             </>
           ) : (
             <NavLink

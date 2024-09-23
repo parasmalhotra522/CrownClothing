@@ -23,7 +23,7 @@ const Authentication = () => {
       } else {
         dispatch(stopLoading());
         // User is not signed in, stay on authentication page
-        console.log("User is not logged in");
+        // console.log("User is not logged in");
       }
     });
 

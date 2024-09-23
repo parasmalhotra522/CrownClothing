@@ -1,9 +1,22 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState } from 'react';
 
 const Avatar = ({ currentUser, onSignOut }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [userName, setUserName] = useState(currentUser.displayName);
   // console.log("----Curent user", currentUser);
   // Toggles the dropdown visibility
+ 
+  useEffect(() => {
+    console.log("CHeck username from local Storage",JSON.parse(localStorage.getItem('authData')).displayName)
+    if (!currentUser.displayName) {
+      setUserName(JSON.parse(localStorage.getItem('authData')).displayName)
+    } else {
+          setUserName(currentUser.email)
+ 
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[])
+ 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
@@ -30,7 +43,7 @@ const Avatar = ({ currentUser, onSignOut }) => {
           />
         ) : (
           <div style={avatarStyles.initials}>
-            {getInitials(currentUser?.displayName || currentUser?.email)}
+            {getInitials(userName || currentUser?.email)}
           </div>
         )}
       </div>
